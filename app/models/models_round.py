@@ -1,9 +1,7 @@
 class Round:
-    def __init__(self, matchs_list=[]):
+    def __init__(self, name, matchs_list=[]):
+        self.name = name
         self.match_list = matchs_list
-
-    def generate_players_pairs(self, round_players_list):
-        pass
 
     def record_results(self):
         pass
