@@ -1,7 +1,15 @@
 class Round:
-    def __init__(self, name, matchs_list=[]):
+    def __init__(self, name, start, finish, match_list):
         self.name = name
-        self.match_list = matchs_list
+        self.start = start
+        self.finish = finish
+        self.match_list = match_list
 
-    def record_results(self):
-        pass
+    def serialize_round(self):
+        serialized_round = {
+            "name": self.name,
+            "start_date": self.start,
+            "finish_date": self.finish,
+            "matches": self.match_list,
+        }
+        return serialized_round
