@@ -1,11 +1,12 @@
+"""The controller_tournaments module
+
+Returns:
+    class: The controller_tournaments class
+"""
 # Python libraries / modules imports
 import os
 from time import sleep as sl
 from datetime import datetime as dt
-
-# Installed libraries / modules imports
-import numpy as np
-import pandas as pd
 
 # Created libraries / modules imports
 from app.data.db import TOURNAMENTS_TABLE as tournaments_table
@@ -18,22 +19,25 @@ from app.controllers.controller_reports import Reports as rps
 
 
 class Controller:
-    """[summary]"""
+    """The controller_tournaments class"""
 
     def __init__(self):
+        """initialize views"""
         self.views = vtm(self)
         self.main_view = mvm(self)
 
     def main_menu(self):
-        mm = self.main_view.main_menu()
-        if mm == "1":
+        """The main view controls"""
+        main_menu_result = self.main_view.main_menu()
+        if main_menu_result == "1":
             self.tournaments_menu_choices()
-        elif mm == "2":
+        elif main_menu_result == "2":
             rps().main_reports_menu()
-        elif mm == "3":
+        elif main_menu_result == "3":
             os.system("exit()")
 
     def tournaments_menu_choices(self):
+        """Tournament choices controls"""
         choice = self.views.tournament_menu_choices()
         if choice == "1":
             self.create_new_tournament()
@@ -47,6 +51,12 @@ class Controller:
             self.tournaments_menu_choices()
 
     def create_player(self):
+        """Method to create players
+
+        Returns:
+            class instance: an instance of the Player class
+            allied with its serialize_player method
+        """
         result = self.views.add_new_player()
         player = Player(
             result[0],
@@ -59,6 +69,12 @@ class Controller:
         return player.serialize_player()
 
     def create_admin(self):
+        """Method to create admin
+
+        Returns:
+            class instance: an instance of the Admin class
+            allied with its serialize_admin method
+        """
         result = self.views.add_new_admin()
         admin = Admin(
             result[0],
@@ -67,6 +83,7 @@ class Controller:
         return admin.serialize_admin()
 
     def create_new_tournament(self):
+        """Method to create a tournament"""
         result = self.views.create_tournament()
         les_joueurs = []
         for i, j in zip(range(8), range(1, 9)):
@@ -77,7 +94,7 @@ class Controller:
             self.create_admin(),
             result[0],
             result[1],
-            self.generate_date(),
+            dt.now().strftime("%d-%m-%Y %H:%M:%S"),
             result[2],
             result[3],
             result[4],
@@ -85,29 +102,28 @@ class Controller:
             les_joueurs,
             [],
         )
-        self.tournament = tournament
+        tournament
         # tournament.record_tournament(tournaments_table)
         print("Parfait, votre Tournoi est crée et vos joueurs ajoutés.\n")
         sl(2)
-        self.tournament.generate_first_round()
-        self.tournament.generate_other_round()
-        self.tournament.record_tournament(tournaments_table)
+        tournament.generate_first_round()
+        tournament.generate_other_round()
+        tournament.record_tournament(tournaments_table)
         input("Appuyez sur entrée pour continuer!")
         sl(2)
         self.tournaments_menu_choices()
 
-    def generate_date(self):
-        now = dt.now().strftime("%d-%m-%Y %H:%M:%S")
-        return now
-
     def quit_application(self):
+        """Method to quit application"""
         print("Merci de votre visite, Aurevoir")
         sl(2)
         os.system("exit()")
 
     def back_to_main_menu(self):
+        """Method to get back to the main menu"""
         self.tournaments_menu_choices()
 
 
 if __name__ == "__main__":
+    """launches the game"""
     Controller().main_menu()

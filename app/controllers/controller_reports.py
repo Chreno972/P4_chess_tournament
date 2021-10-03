@@ -1,7 +1,8 @@
 # Python libraries / modules imports
 import os
 from time import sleep as sl
-import csv
+
+# import csv
 
 # Installed libraries / modules imports
 import numpy as np
@@ -25,7 +26,7 @@ class Reports:
             input("\nAppuyez sur entrée pour continuer!")
             self.main_reports_menu()
         elif choice == "3":
-            self.display_all_participants()
+            self.display_actors()
         elif choice == "4":
             self.display_tournament_matches()
         elif choice == "5":
@@ -85,7 +86,7 @@ class Reports:
             sl(3)
             self.main_reports_menu()
 
-    def display_all_participants(self):
+    def display_actors(self):
         participants = []
         administrators = []
         indexes = []
@@ -104,7 +105,7 @@ class Reports:
                         item["players"][i]["name"],
                         item["tournament_name"],
                         "Joueur",
-                        int(item["players"][i]["rank"]),
+                        item["players"][i]["rank"],
                     ]
                 )
         participants.extend(administrators)
@@ -112,7 +113,7 @@ class Reports:
             i = ""
             indexes.append(i)
         pt_numpy = np.array(participants)
-        all_participants = pd.DataFrame(
+        actors = pd.DataFrame(
             pt_numpy,
             index=indexes,
             columns=[
@@ -124,15 +125,18 @@ class Reports:
         )
         choice = self.views.display_order_choices()
         if choice == "1":
-            print(all_participants.sort_values(by=["PARTICIPANTS"], ascending=True))
+            print(
+                actors.sort_values(by=["PARTICIPANTS"], ascending=True),
+            )
             input("\nAppuyez sur entrée pour continuer!")
             self.main_reports_menu()
         elif choice == "2":
-            print(all_participants.sort_values(by=["RANK"], ascending=True))
+            actors.RANK = actors.RANK.astype(int)
+            print(actors.sort_values(by=["RANK"], ascending=True))
             input("\nAppuyez sur entrée pour continuer!")
             self.main_reports_menu()
         elif choice == "3":
-            print(all_participants)
+            print(actors)
             input("\nAppuyez sur entrée pour continuer!")
             self.main_reports_menu()
         else:
@@ -210,7 +214,7 @@ class Reports:
             ],
         )
         print()
-        print(players_list.sort_values(by=["NOM DU TOURNOI"]))
+        print(players_list.sort_values(by=["ID"]))
         print()
 
 

@@ -1,13 +1,20 @@
-from app.models.models_round import Round as rd
-from app.models.models_admin import Admin as adm
+# Python libraries / modules imports
+from datetime import datetime as dt
+from operator import itemgetter
 
-
+# Installed libraries / modules imports
 import numpy as np
 import pandas as pd
 
+# Created libraries / modules imports
+from app.models.models_round import Round as rd
+from app.models.models_match import Match as mt
 
-from datetime import datetime as dt
-from operator import itemgetter
+"""The tournament's model
+
+Returns:
+    class: The tournament's class
+"""
 
 
 class Tournaments:
@@ -24,6 +31,20 @@ class Tournaments:
         players=None,
         winner=None,
     ):
+        """The tournaments class initialization
+
+        Args:
+            admin (class): Une instance de la classe Admin
+            tournament_name (str): the tournament's name
+            tournament_place (str): the tournaments place
+            tournament_date (str): the tournament's date
+            time_control (str): the tournament's playing style
+            description (str): the administrators give descriptions
+            turns (int): the number of turns(rounds)
+            rounds (list): A list of a tournament's rounds
+            players (list): A list of a tournament's players
+            winner (Dict): A dictionnary with the winner's informations
+        """
         self.admin = admin
         self.turns = turns
         self.tournament_name = tournament_name
@@ -51,188 +72,129 @@ class Tournaments:
             }
         )
 
-    def __repr__(self):
-        re = (
-            self.tournament_name,
-            self.tournament_place,
-            self.tournament_date,
-        )
-        return re
-
     def add_player(self, player):
+        """Affords to add an instance of the Player's class
+        into a list
+
+        Args:
+            player (list): contains each new instance of a Player
+        """
         self.players.append(player)
 
     def generate_first_round(self):
-        print(f"\nROUND 1 DU TOURNOI {self.tournament_name}\n")
-        # générer la liste des matchs
-        list_matchs = []
-        match1 = {
-            "first_player_name": self.players[0]["name"],
-            "first_player_score": float(
-                input(f"Quel est le score de {self.players[0]['name']} ?\n")
-            ),
-            "second_player_name": self.players[4]["name"],
-            "second_player_score": float(
-                input(f"Quel est le score de {self.players[4]['name']} ?\n")
-            ),
-        }
-        self.players[0]["scores"] = match1["first_player_score"]
-        self.players[4]["scores"] = match1["second_player_score"]
-        match2 = {
-            "first_player_name": self.players[1]["name"],
-            "first_player_score": float(
-                input(f"Quel est le score de {self.players[1]['name']} ?\n")
-            ),
-            "second_player_name": self.players[5]["name"],
-            "second_player_score": float(
-                input(f"Quel est le score de {self.players[5]['name']} ?\n")
-            ),
-        }
-        self.players[1]["scores"] = match2["first_player_score"]
-        self.players[5]["scores"] = match2["second_player_score"]
-        match3 = {
-            "first_player_name": self.players[2]["name"],
-            "first_player_score": float(
-                input(f"Quel est le score de {self.players[2]['name']} ?\n")
-            ),
-            "second_player_name": self.players[6]["name"],
-            "second_player_score": float(
-                input(f"Quel est le score de {self.players[6]['name']} ?\n")  # vues
-            ),
-        }
-        self.players[2]["scores"] = match3["first_player_score"]  # controller
-        self.players[6]["scores"] = match3["second_player_score"]
-        match4 = {
-            "first_player_name": self.players[3]["name"],
-            "first_player_score": float(
-                input(f"Quel est le score de {self.players[3]['name']} ?\n")
-            ),
-            "second_player_name": self.players[7]["name"],
-            "second_player_score": float(
-                input(f"Quel est le score de {self.players[7]['name']} ?\n")
-            ),
-        }
-        self.players[3]["scores"] = match4["first_player_score"]
-        self.players[7]["scores"] = match4["second_player_score"]
+        """Generates the first_round
 
-        list_matchs = [match1, match2, match3, match4]
+        Returns:
+            Dict:
+            creates all the matches following the swiss rules
+            inserts each match into a list
+            creates a Round class instance,
+            puts the match list into the instance of Round
+            puts the instance of Rounds into the Tournament's rounds list
+            then returns the updated player's scores
+        """
+
+        print(f"\nROUND 1 DU TOURNOI {self.tournament_name}\n")
+
+        list_matchs = []
+        match = {}
+        for j, k in zip(range(0, 4), range(4, 8)):
+            print(f"\nmatch {j}\n")
+            match[j] = mt(
+                self.players[j]["name"],
+                float(input(f"score de {self.players[j]['name']}\n")),
+                self.players[k]["name"],
+                float(input(f"score de {self.players[k]['name']}\n")),
+            ).serialize_match()
+            self.players[j]["scores"] = match[j]["first_player_score"]
+            self.players[k]["scores"] = match[j]["second_player_score"]
+            list_matchs.append(match[j])
+
         print("\nRésultats du Round 1\n")
         self.display_matches(list_matchs)
-        # créer l'objet round
+        round_started = dt.now().strftime("%d-%m-%Y %H:%M:%S")
         round = rd(
             "Round 1",
-            "dt",
+            round_started,
             "13/09/2021 à 20h00",
             list_matchs,
         )
-        ser_round = {
+        ser = {
             "name": round.name,
             "start_date": round.start,
             "finish_date": round.finish,
             "matches": round.match_list,
         }
-        # # ajouter le round à la liste des rounds du tournoi (self)
-        self.rounds.append(ser_round)
+        self.rounds.append(ser)
         print()
-        self.display_scores()
-        print(f"\nFin du {ser_round['name']}\n")
+        print(f"Fin du {ser['name']}")
         return self.players
 
     def generate_other_round(self):
+        """
+        Generates all the other rounds according to
+        the defined numbers of rounds by the administrator
+        """
         if int(self.turns) > 1:
             iter = 0
             next_round = 2
+            nb_match = 1
             while iter < int(self.turns) - 1:
-                try:
-                    print(
-                        "\nROUND {} DU TOURNOI {}\n".format(
-                            next_round, self.tournament_name
-                        )
+                print(
+                    "\nROUND {} DU TOURNOI {}\n".format(
+                        next_round, self.tournament_name
                     )
-                    round_started = dt.now().strftime("%d-%m-%Y %H:%M:%S")
-                    sorted_list = sorted(self.players, key=itemgetter("scores"))
-                    list_matchs = []
-                    match1 = {
-                        "first_player_name": sorted_list[0]["name"],
-                        "first_player_score": float(
-                            input(f"Quel est le score de {sorted_list[0]['name']} ?\n")
-                        ),
-                        "second_player_name": sorted_list[1]["name"],
-                        "second_player_score": float(
-                            input(f"Quel est le score de {sorted_list[1]['name']} ?\n")
-                        ),
-                    }
-                    self.players[0]["scores"] += match1["first_player_score"]
-                    self.players[1]["scores"] += match1["second_player_score"]
-                    match2 = {
-                        "first_player_name": sorted_list[2]["name"],
-                        "first_player_score": float(
-                            input(f"Quel est le score de {sorted_list[2]['name']} ?\n")
-                        ),
-                        "second_player_name": sorted_list[3]["name"],
-                        "second_player_score": float(
-                            input(f"Quel est le score de {sorted_list[3]['name']} ?\n")
-                        ),
-                    }
-                    self.players[2]["scores"] += match2["first_player_score"]
-                    self.players[3]["scores"] += match2["second_player_score"]
-                    match3 = {
-                        "first_player_name": sorted_list[4]["name"],
-                        "first_player_score": float(
-                            input(f"Quel est le score de {sorted_list[4]['name']} ?\n")
-                        ),
-                        "second_player_name": sorted_list[5]["name"],
-                        "second_player_score": float(
-                            input(f"Quel est le score de {sorted_list[5]['name']} ?\n")
-                        ),
-                    }
-                    self.players[4]["scores"] += match3["first_player_score"]
-                    self.players[5]["scores"] += match3["second_player_score"]
-                    match4 = {
-                        "first_player_name": sorted_list[6]["name"],
-                        "first_player_score": float(
-                            input(f"Quel est le score de {sorted_list[6]['name']} ?\n")
-                        ),
-                        "second_player_name": sorted_list[7]["name"],
-                        "second_player_score": float(
-                            input(f"Quel est le score de {sorted_list[7]['name']} ?\n")
-                        ),
-                    }
-                    self.players[6]["scores"] += match4["first_player_score"]
-                    self.players[7]["scores"] += match4["second_player_score"]
-
-                    list_matchs = [match1, match2, match3, match4]
-                    print("\nRésultats du Round\n")
-                    self.display_matches(list_matchs)
-                    self.display_scores()
-                    round = rd(
-                        "Round {}".format(next_round),
-                        round_started,
-                        "13/09/2021 à 20h00",
-                        list_matchs,
-                    )
-                    ser_round = {
-                        "name": round.name,
-                        "start_date": round.start,
-                        "finish_date": round.finish,
-                        "matches": round.match_list,
-                    }
-                    self.rounds.append(ser_round)
-                    print("\nFin du round {}\n".format(next_round))
-                    ser_round["finish_date"] = dt.now().strftime("%d-%m-%Y %H%M:%S")
-                    next_round += 1
-                    iter += 1
-                except Exception:
-                    print("ALERTE -- ALERTE -- ALERTE -- ALERTE !!!!!!")
-                    break
+                )
+                round_started = dt.now().strftime("%d-%m-%Y %H:%M:%S")
+                sorted_list = sorted(self.players, key=itemgetter("scores"))
+                list_matchs = []
+                mat = {}
+                for i, j, k in zip(
+                    range(0, 8, 2),
+                    range(1, 8, 2),
+                    range(1, 5),
+                ):
+                    print(f"Match {k}")
+                    mat[k] = mt(
+                        sorted_list[i]["name"],
+                        float(input(f"score de {sorted_list[i]['name']}\n")),
+                        sorted_list[j]["name"],
+                        float(input(f"score de {sorted_list[j]['name']}\n")),
+                    ).serialize_match()
+                    self.players[i]["scores"] += mat[k]["first_player_score"]
+                    self.players[j]["scores"] += mat[k]["second_player_score"]
+                    list_matchs.append(mat[k])
+                print("\nRésultats du Round\n")
+                self.display_matches(list_matchs)
+                round = rd(
+                    "Round {}".format(next_round),
+                    round_started,
+                    "13/09/2021 à 20h00",
+                    list_matchs,
+                )
+                ser = {
+                    "name": round.name,
+                    "start_date": round.start,
+                    "finish_date": round.finish,
+                    "matches": round.match_list,
+                }
+                self.rounds.append(ser)
+                print("\nFin du round {}\n".format(next_round))
+                ser["finish_date"] = dt.now().strftime("%d-%m-%Y %H%M:%S")
+                next_round += 1
+                iter += 1
+                nb_match += 1
             the_winner = max(self.players, key=lambda x: x["scores"])
             win_place = {
                 "name": the_winner["name"],
                 "score": the_winner["scores"],
             }
+
+            self.display_scores()
+            print()
             self.winner.append(win_place)
             print(
-                "Tournoi '{}' terminé le {}. \n{} le remporte avec un score total de {} points.\n".format(
+                "'{}' terminé le {}. \nGagnant: {} score {} points.\n".format(
                     self.tournament_name,
                     dt.now().strftime("%d-%m-%Y à %H heures %M"),
                     the_winner["name"].upper(),
@@ -243,7 +205,7 @@ class Tournaments:
     def display_matches(self, the_list):
         matches_data = []
         matchs = []
-        for i in range(1, 5):
+        for i in range(1, len(the_list) + 1):
             matchs.append(f"Match {i}")
         for item in the_list:
             matches_data.append(
