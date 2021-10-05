@@ -11,6 +11,7 @@ from datetime import datetime as dt
 # Created libraries / modules imports
 from app.data.db import TOURNAMENTS_TABLE as tournaments_table
 from app.models.models_player import Player
+from app.models.models_round import Round as rd
 from app.models.models_admin import Admin
 from app.models.models_tournaments import Tournaments
 from app.views.view_main_menu import MainViewMenu as mvm
@@ -106,12 +107,88 @@ class Controller:
         # tournament.record_tournament(tournaments_table)
         print("Parfait, votre Tournoi est crée et vos joueurs ajoutés.\n")
         sl(2)
-        tournament.generate_first_round()
-        tournament.generate_other_round()
+        self.launch_first_round(tournament)
+        self.launch_other_rounds(tournament)
         tournament.record_tournament(tournaments_table)
         input("Appuyez sur entrée pour continuer!")
         sl(2)
         self.tournaments_menu_choices()
+
+    def launch_first_round(self, tournoi):
+        print(f"\nROUND 1 DU TOURNOI {tournoi.tournament_name}\n")
+        generation = tournoi.generate_first_round()
+        print("\nRésultats du Round 1\n")
+        tournoi.display_matches(generation)
+        round_started = dt.now().strftime("%d-%m-%Y %H:%M:%S")
+        round = rd(
+            "Round 1",
+            round_started,
+            "13/09/2021 à 20h00",
+            generation[0],
+        )
+        ser = {
+            "name": round.name,
+            "start_date": round.start,
+            "finish_date": round.finish,
+            "matches": round.match_list,
+        }
+        tournoi.rounds.append(ser)
+        print()
+        print(f"Fin du {ser['name']}")
+        return tournoi.players
+
+    def launch_other_rounds(self, tournoi):
+        if int(tournoi.turns) > 1:
+            iter = 0
+            next_round = 2
+            nb_match = 1
+            round_started = dt.now().strftime("%d-%m-%Y %H:%M:%S")
+            while iter < int(tournoi.turns) - 1:
+                generation = tournoi.generate_other_round()
+                print(
+                    "\nROUND {} DU TOURNOI {}\n".format(
+                        next_round, tournoi.tournament_name
+                    )
+                )
+
+                print("\nRésultats du Round {}\n".format(next_round))
+                tournoi.display_matches(generation)
+                round = rd(
+                    "Round {}".format(next_round),
+                    round_started,
+                    "13/09/2021 à 20h00",
+                    generation[0],
+                )
+                ser = {
+                    "name": round.name,
+                    "start_date": round.start,
+                    "finish_date": round.finish,
+                    "matches": round.match_list,
+                }
+                tournoi.rounds.append(ser)
+                print("\nFin du round {}\n".format(next_round))
+                sl(2)
+                ser["finish_date"] = dt.now().strftime("%d-%m-%Y %H:%M:%S")
+                next_round += 1
+                iter += 1
+                nb_match += 1
+            the_winner = max(tournoi.players, key=lambda x: x["scores"])
+            win_place = {
+                "name": the_winner["name"],
+                "score": the_winner["scores"],
+            }
+
+            tournoi.display_scores()
+            print()
+            tournoi.winner.append(win_place)
+            print(
+                "'{}' terminé le {}. \nGagnant: {} score {} points.\n".format(
+                    tournoi.tournament_name,
+                    dt.now().strftime("%d-%m-%Y à %H heures %M"),
+                    the_winner["name"].upper(),
+                    the_winner["scores"],
+                )
+            )
 
     def quit_application(self):
         """Method to quit application"""
