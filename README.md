@@ -57,3 +57,7 @@ Tapez dans votre terminal `pip install -r requirements.txt`, ainsi, toutes les d
 
 Pour lancer le programme dans votre terminal, tapez "python3 main.py"
 Vous n'avez plus qu'a suivre les instructions.
+
+Vous aurez la possibilité de créer un tournoi ou accéder aux résultats de tournois existants avec la possibilité de classer ces derniers dans un ordre spécifique.
+Enfin, vous pourrez accéder aux données sous format JSON, dans le fichier servant de base de données "app/data/Tournaments_reports.json".
+Je n'ai pas mis en place de possibilité d'export des données car cette idée est encore en cours de réflexion.
