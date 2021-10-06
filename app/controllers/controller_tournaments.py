@@ -124,7 +124,7 @@ class Controller:
             "Round 1",
             round_started,
             "13/09/2021 à 20h00",
-            generation[0],
+            generation,
         )
         ser = {
             "name": round.name,
@@ -157,7 +157,7 @@ class Controller:
                     "Round {}".format(next_round),
                     round_started,
                     "13/09/2021 à 20h00",
-                    generation[0],
+                    generation,
                 )
                 ser = {
                     "name": round.name,
@@ -189,6 +189,7 @@ class Controller:
                     the_winner["scores"],
                 )
             )
+            return tournoi.players
 
     def quit_application(self):
         """Method to quit application"""

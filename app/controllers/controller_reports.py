@@ -147,6 +147,10 @@ class Reports:
     def display_tournament_matches(self):
         tournament_choice = self.views.get_tournament_id()
         data = []
+        ind = []
+        for i in range(1, 17):
+            i = ""
+            ind.append(i)
         for item in tournaments_table:
             if str(item.doc_id) == tournament_choice:
                 for el in item["rounds"]:
@@ -164,6 +168,7 @@ class Reports:
         data_numpy = np.array(data, dtype=object)
         match_list = pd.DataFrame(
             data_numpy,
+            index=ind,
             columns=[
                 "ROUNDS",
                 "MATCHS",
@@ -173,7 +178,7 @@ class Reports:
                 "SCORE 2",
             ],
         )
-        print(match_list)
+        print(f"\n{match_list}")
 
     def display_tournaments(self):
         data = []
