@@ -51,8 +51,7 @@ ensuite activate.bat
 Maintenant que votre environnement virtuel est installé, tapez `cd ../../`, pour revenir à la racine du dossier
 
 **Installez les bibliothèques utilisées dans le programme**
-Tout d'abord, vérifiez si rien n'est installé dans votre environnement virtuel en tapant dans le terminal `pip freeze`, si rien ne s'affiche en retour, on peut commencer à installer les dépendances présentes dans notre fichier "requirements.txt".
-Tapez dans votre terminal `pip freeze > requirements.txt`, ainsi, toutes les dépendances seront automatiquement installées, peu importe leur nombre.
+Tapez dans votre terminal `pip install -r requirements.txt`, ainsi, toutes les dépendances seront automatiquement installées, peu importe leur nombre.
 
 ## Lancement du programme
 
