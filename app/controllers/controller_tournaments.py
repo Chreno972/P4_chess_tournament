@@ -103,8 +103,6 @@ class Controller:
             les_joueurs,
             [],
         )
-        tournament
-        # tournament.record_tournament(tournaments_table)
         print("Parfait, votre Tournoi est crée et vos joueurs ajoutés.\n")
         sl(2)
         self.launch_first_round(tournament)
@@ -114,36 +112,59 @@ class Controller:
         sl(2)
         self.tournaments_menu_choices()
 
-    def launch_first_round(self, tournoi):
+    @classmethod
+    def launch_first_round(cls, tournoi):
+        """lauch the first round
+
+        Args:
+            tournoi (class): an argument replaced by
+            a Tournament class instance
+
+        Returns:
+            Dict: the players sorted by their scores
+        """
         print(f"\nROUND 1 DU TOURNOI {tournoi.tournament_name}\n")
         generation = tournoi.generate_first_round()
         print("\nRésultats du Round 1\n")
         tournoi.display_matches(generation)
         round_started = dt.now().strftime("%d-%m-%Y %H:%M:%S")
-        round = rd(
+        __round__ = rd(
             "Round 1",
             round_started,
             "13/09/2021 à 20h00",
             generation,
         )
         ser = {
-            "name": round.name,
-            "start_date": round.start,
-            "finish_date": round.finish,
-            "matches": round.match_list,
+            "name": __round__.name,
+            "start_date": __round__.start,
+            "finish_date": __round__.finish,
+            "matches": __round__.match_list,
         }
         tournoi.rounds.append(ser)
         print()
         print(f"Fin du {ser['name']}")
-        return tournoi.players
+        return tournoi.players.sort(
+            key=lambda x: x.get("scores"),
+            reverse=True,
+        )
 
-    def launch_other_rounds(self, tournoi):
+    @classmethod
+    def launch_other_rounds(cls, tournoi):
+        """Launch the other rounds
+
+        Args:
+            tournoi (class): an argument replaced by
+            a Tournament class instance
+
+        Returns:
+            Dict: the players sorted by their scores
+        """
         if int(tournoi.turns) > 1:
-            iter = 0
+            itera = 0
             next_round = 2
             nb_match = 1
             round_started = dt.now().strftime("%d-%m-%Y %H:%M:%S")
-            while iter < int(tournoi.turns) - 1:
+            while itera < int(tournoi.turns) - 1:
                 generation = tournoi.generate_other_round()
                 print(
                     "\nROUND {} DU TOURNOI {}\n".format(
@@ -153,24 +174,24 @@ class Controller:
 
                 print("\nRésultats du Round {}\n".format(next_round))
                 tournoi.display_matches(generation)
-                round = rd(
+                __round__ = rd(
                     "Round {}".format(next_round),
                     round_started,
                     "13/09/2021 à 20h00",
                     generation,
                 )
                 ser = {
-                    "name": round.name,
-                    "start_date": round.start,
-                    "finish_date": round.finish,
-                    "matches": round.match_list,
+                    "name": __round__.name,
+                    "start_date": __round__.start,
+                    "finish_date": __round__.finish,
+                    "matches": __round__.match_list,
                 }
                 tournoi.rounds.append(ser)
                 print("\nFin du round {}\n".format(next_round))
                 sl(2)
                 ser["finish_date"] = dt.now().strftime("%d-%m-%Y %H:%M:%S")
                 next_round += 1
-                iter += 1
+                itera += 1
                 nb_match += 1
             the_winner = max(tournoi.players, key=lambda x: x["scores"])
             win_place = {
@@ -189,7 +210,10 @@ class Controller:
                     the_winner["scores"],
                 )
             )
-            return tournoi.players
+        return tournoi.players.sort(
+            key=lambda x: x.get("scores"),
+            reverse=True,
+        )
 
     def quit_application(self):
         """Method to quit application"""
