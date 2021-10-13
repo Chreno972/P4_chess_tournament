@@ -1,7 +1,8 @@
+"""Importe la librairie tinydb
+"""
 from tinydb import TinyDB, Query
 
 
-""" Base de données des tournois """
 DB = TinyDB(
     "app/data/Tournaments_reports.json",
     indent=4,
