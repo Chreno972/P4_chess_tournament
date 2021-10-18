@@ -1,16 +1,16 @@
 class MainViewMenu(object):
     """
-    class docstrings
+    The main menu choices
     """
 
     def __init__(self, controller):
         self.controller = controller
 
     def main_menu(self):
-        """[summary]
+        """Make your first choice
 
         Returns:
-            [type]: [description]
+            str: your choice
         """
         print("MENU PRINCIPAL")
         print("Choix 1 - Menu des Tournois")

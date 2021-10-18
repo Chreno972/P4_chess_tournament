@@ -3,6 +3,11 @@ class RViews(object):
         self.r_controller = r_controller
 
     def reports_menu_choices(self):
+        """Make a choice to view a report
+
+        Returns:
+            str: the choice
+        """
 
         print("MENU DES REPORTS\n")
         print("Choix 1 - Liste des joueurs d'un tournoi")
@@ -14,11 +19,21 @@ class RViews(object):
         return reports_menu_choice
 
     def get_tournament_id(self):
+        """find tournament by id
+
+        Returns:
+            str: the id
+        """
         self.r_controller.display_tournaments()
         tournament_id = input("\nQuel est l'id du tournoi ? ")
         return tournament_id
 
     def display_order_choices(self):
+        """choose how to order the display
+
+        Returns:
+            str: the order to display
+        """
         print("Choix 1 - Vue par ordre alphabétique ?")
         print("Choix 2 - Vue par ordre de classement ?")
         print("Choix 3 - Vue par ordre d'enregistrement ?")

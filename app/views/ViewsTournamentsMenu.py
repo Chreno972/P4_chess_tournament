@@ -1,16 +1,16 @@
 class Views(object):
     """
-    class docstrings
+    All the views for the tournament
     """
 
     def __init__(self, controller):
         self.controller = controller
 
     def tournament_menu_choices(self):
-        """[summary]
+        """Make your choice for the tournament
 
         Returns:
-            [type]: [description]
+            str: the string number that represents the choice
         """
         print("MENU DES TOURNOIS\n")
         # self.controller.display_players()
@@ -21,10 +21,10 @@ class Views(object):
         return tournaments_menu_choice
 
     def add_new_player(self):
-        """[summary]
+        """Make your choices to create a player
 
         Returns:
-            [type]: [description]
+            list: a list of variables
         """
 
         prenom = input("prenom du participant : ")
@@ -36,15 +36,20 @@ class Views(object):
         return [prenom, nom, birthday, genre, classement, score]
 
     def add_new_admin(self):
+        """Name your new admin
+
+        Returns:
+            list: a list of variables
+        """
         admin_prename = input("quel est votre prénom d'administrateur ?\n")
         admin_name = input("Quel est votre nom d'administrateur ?\n")
         return [admin_prename, admin_name]
 
     def create_tournament(self):
-        """[summary]
+        """Enter your choices to create a tournament
 
         Returns:
-            [type]: [description]
+            list: a list of variables
         """
         print("CRÉER UN TOURNOI\n")
         tournament_name = input("Quel sera son nom ? ")
